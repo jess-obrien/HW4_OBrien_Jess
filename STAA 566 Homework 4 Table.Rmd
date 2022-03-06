@@ -1,0 +1,45 @@
+---
+title: "STAA 566 Homework 4 - Table"
+author: "Jessica O'Brien"
+date: "3/5/2022"
+output: html_document
+knit: (function(input_file, encoding){
+  out_dir <- 'docs'; 
+  rmarkdown::render(input_file,
+  encoding=encoding,
+  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+---
+**Data Source:** 
+https://ephtracking.cdc.gov/DataExplorer/ (select Asthma > Asthma Prevalence Among Children > Percent of Children Ever Diagnosed with Asthma > All Years)
+
+**Background**
+This data explores the percentage of children with asthma, by state and age group. I created the table with the DT package because I liked the ability to search for a particular value (i.e. if one wanted to see the data for only one state, they could enter it in the search box). I also thought the ability to sort by column values was useful - it's an easy way to see which states have the highest and lowest percentage of children with asthma for a particular age group. If a public health professional was using this table they might choose the top 5 states to target outreach about childhood asthma management and prevention. Or, they may use the search bar to find groups with a particular percentage of children diagnosed. The DT package seems to have a lot of interactive functionality in a simple and intuitive format, which I appreciate. 
+
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+```{r}
+df<-read.csv('Childhood Asthma.csv')
+```
+
+```{r}
+df_2019<-df%>%filter(Year==2019)
+df_2019$Value[df_2019$Value=="Data Not Collected"]<-NA
+df_2019$Value[df_2019$Value=="Suppressed"]<-NA
+df_2019<-subset(df_2019, !is.na(Value))
+```
+
+```{r}
+df_2019<-spread(df_2019, key=Age.Group, Value)
+```
+
+
+```{r}
+library(DT)
+df_2019%>%select(State, '0 TO 4', '5 TO 9', '10 TO 14', '15 TO 17')%>% datatable(colnames=c("State", "0-4 Years", "5-9 Years", "10-14 Years", "15-17 Years"), caption = htmltools::tags$caption( style = 'caption-side: top; text-align: center; color:black; font-size:200% ;','2019 Percentage of Children with Asthma'), filter='top')
+```
+                                                                                         
+                                                                                         
+
